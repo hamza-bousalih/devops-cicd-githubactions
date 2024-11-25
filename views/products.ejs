@@ -1,33 +1,44 @@
-
 <!-- views/products.ejs -->
 <%- include('layout') %>
-<h2>Product List</h2>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% products.forEach(function(product) { %>
-                <tr>
-                    <td><%= product.id %></td>
-                    <td><%= product.name %></td>
-                    <td>$<%= product.price %></td>
-                    <td><%= product.description %></td>
-                    <td>
-                        <form action="/products/delete/<%= product.id %>" method="POST" style="display: inline;">
-                            <a href="/products/edit/<%= product.id %>" class="btn btn-warning btn-sm">Edit</a>
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-</div>
+    <div class="p-4">
+
+        <h2>Product List</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(function(product) { %>
+                        <tr>
+                            <td>
+                                <%= product.id %>
+                            </td>
+                            <td>
+                                <%= product.name %>
+                            </td>
+                            <td>$<%= product.price %>
+                            </td>
+                            <td>
+                                <%= product.description %>
+                            </td>
+                            <td>
+                                <form action="/products/delete/<%= product.id %>" method="POST"
+                                    style="display: inline;">
+                                    <a href="/products/edit/<%= product.id %>" class="btn btn-warning btn-sm">Edit</a>
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>

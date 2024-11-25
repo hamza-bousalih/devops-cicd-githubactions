@@ -9,10 +9,11 @@ const app = express();
 
 // MySQL Connection
 const db = mysql.createConnection({
-    host: process.env.MYSQL_HOST || 'localhost',
-    user: process.env.MYSQL_USER || 'root',
-    password: process.env.MYSQL_PASSWORD || '',
-    database: process.env.MYSQL_DB || 'product_db'
+    host: process.env.MYSQL_HOST || 'mysql-29589f47-bsh-c147.f.aivencloud.com',
+    user: process.env.MYSQL_USER || 'avnadmin',
+    password: process.env.MYSQL_PASSWORD || 'AVNS_20WzoviYmZAE1GfJ3Yr',
+    database: process.env.MYSQL_DB || 'defaultdb',
+    port: process.env.MYSQL_PORT || 21277,
 });
 
 db.connect((err) => {
