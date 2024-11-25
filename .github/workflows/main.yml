@@ -1,0 +1,54 @@
+name: Product CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # specifier que ce job s'exécute sur un environnement virtuel 
+
+    steps: # sont les etapes de job
+      - name: Checkout code # télécharge le code source dans l'environnement virtuel
+        uses: actions/checkout@v3 # l'action de version 3
+
+      - name: Set up Python
+        uses: actions/setup-node@v3
+        with:
+          python-version: '20' # Configure un environnement Python 3.10 
+
+      - name: Install dependencies # Met à jour pip et installe les dépendances listées
+        run: npm install
+
+      # - name: Run Flask tests
+      #   run: npm run test
+
+  docker:
+    needs: build # indique que le job docker depend à le job build.
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub # 2 step de job docker 
+        uses: docker/login-action@v2 # action officielle pour se connecter à Docker Hub.
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:${{ github.sha }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:latest
+
+  deploy:
+    needs: docker # indique que ce job depend du job docker et ne démarre que le job docker est terminé avec succès
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deployment
+        run: curl -X GET ${{ secrets.RENDER_HOOK }} # Déclenche le déploiement de l'application sur Render en utilisant une image Docker.
