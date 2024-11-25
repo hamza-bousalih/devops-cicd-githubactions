@@ -5,15 +5,18 @@ const path = require('path');
 const flash = require('express-flash');
 const session = require('express-session');
 
+require('dotenv').config();
+
+
 const app = express();
 
 // MySQL Connection
 const db = mysql.createConnection({
-    host: process.env.MYSQL_HOST || 'mysql-29589f47-bsh-c147.f.aivencloud.com',
-    user: process.env.MYSQL_USER || 'avnadmin',
-    password: process.env.MYSQL_PASSWORD || 'AVNS_20WzoviYmZAE1GfJ3Yr',
-    database: process.env.MYSQL_DB || 'defaultdb',
-    port: process.env.MYSQL_PORT || 21277,
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DB,
+    port: process.env.MYSQL_PORT,
 });
 
 db.connect((err) => {
@@ -44,7 +47,7 @@ app.get('/', (req, res) => {
 app.get('/products', (req, res) => {
     db.query('SELECT * FROM products', (err, results) => {
         if (err) throw err;
-        res.render('products', { 
+        res.render('products', {
             products: results,
             messages: req.flash()
         });
@@ -59,14 +62,14 @@ app.get('/products/add', (req, res) => {
 // Add new product
 app.post('/products/add', (req, res) => {
     const { name, price, description } = req.body;
-    
+
     if (!name || !price || !description) {
         req.flash('error', 'All fields are required!');
         return res.redirect('/products/add');
     }
 
     const product = { name, price, description };
-    
+
     db.query('INSERT INTO products SET ?', product, (err) => {
         if (err) throw err;
         req.flash('success', 'Product added successfully!');
@@ -82,7 +85,7 @@ app.get('/products/edit/:id', (req, res) => {
             req.flash('error', 'Product not found');
             return res.redirect('/products');
         }
-        res.render('edit-product', { 
+        res.render('edit-product', {
             product: results[0],
             messages: req.flash()
         });
@@ -92,7 +95,7 @@ app.get('/products/edit/:id', (req, res) => {
 // Update product
 app.post('/products/edit/:id', (req, res) => {
     const { name, price, description } = req.body;
-    
+
     if (!name || !price || !description) {
         req.flash('error', 'All fields are required!');
         return res.redirect(`/products/edit/${req.params.id}`);
